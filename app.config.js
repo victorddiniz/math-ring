@@ -2,7 +2,7 @@ export default {
   expo: {
     name: "math-ring",
     slug: "math-ring",
-    version: "1.0.0",
+    version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "myapp",
@@ -19,7 +19,7 @@ export default {
       "**/*"
     ],
     ios: {
-      buildNumber: "1.0.0",
+      buildNumber: "1.1.0",
       bundleIdentifier: "com.vddm.math-ring",
       supportsTablet: true
     },
@@ -30,7 +30,7 @@ export default {
       },
       package: "com.vddm.math_ring",
       permissions: [],
-      versionCode: 1
+      versionCode: 2
     },
     web: {
       favicon: "./assets/images/favicon.png"

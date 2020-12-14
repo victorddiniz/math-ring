@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, Clipboard, Text, Alert, Button, NativeSyntheticEvent, TextInputSubmitEditingEventData, View } from 'react-native';
+import { StyleSheet, Clipboard, Text, Alert, Button, NativeSyntheticEvent, TextInputSubmitEditingEventData, View, useColorScheme, Pressable } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import firebase from "firebase";
 
@@ -13,6 +13,7 @@ RootStackParamList,
 
 export default function ShareGameScreen(props: ShareGameProps) {
     const firestore = firebase.firestore();
+    const colorScheme = useColorScheme();
     const [ gameId, updateGameId ] = React.useState(props.route.params.gameId);
     const isHost = props.route.params.gameId.length > 0;
     function copyGameIdToClipboard(): void {
@@ -37,14 +38,16 @@ export default function ShareGameScreen(props: ShareGameProps) {
     return (
         <View style={styles.container}>
             <View style={{...styles.textBox, display: !gameId ? "none" : "flex" }}>
-                <Text style={{fontSize: 25, textAlign: "center"}} onPress={copyGameIdToClipboard}>
+                <Text style={{...styles.text, ...(colorScheme === "dark" && styles.darkText)}} onPress={copyGameIdToClipboard}>
                 {gameId}
                 </Text>
             </View>
             <View style={{...styles.textBox, display: gameId ? "none" : "flex" }}>
-                <TextInput onSubmitEditing={validateGameId} autoFocus={!gameId} style={{ fontSize: 25, textAlign: "center" }}/>
+                <TextInput onSubmitEditing={validateGameId} autoFocus={!gameId} style={{...styles.text, ...(colorScheme === "dark" && styles.darkText)}}/>
             </View>
-            <Button disabled={gameId.length == 0} onPress={startGame} title={"Start game"}/>
+            <Pressable disabled={gameId.length === 0} onPress={startGame} style={{...styles.button, ...(colorScheme === "dark" && styles.darkButton)}}>
+                <Text style={{fontSize: 25}}>Start game</Text>
+            </Pressable>
         </View>
         );
     }
@@ -55,12 +58,33 @@ export default function ShareGameScreen(props: ShareGameProps) {
             alignItems: "center",
             justifyContent: "center",
         },
+        darkButton: {
+            backgroundColor: "#2499FF",
+            borderColor: "#000000"
+        },
+        button: {
+            borderRadius: 10,
+            borderWidth: 1,
+            width: 150,
+            height: 50,
+            backgroundColor: "#00549E",
+            alignItems: "center",
+            justifyContent: "center",
+            borderColor: "#FFFFFF"
+        },
         textBox: {
             width: "75%",
             borderWidth: 1,
             borderColor: "gray",
             borderRadius: 1,
             marginBottom: 20
+        },
+        text: {
+            fontSize: 25,
+            textAlign: "center"
+        },
+        darkText: {
+            color: "#FFFFFF"
         }
     });
     

@@ -1,7 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import firebase from "firebase";
 import * as React from 'react';
-import { StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleSheet, Text, TextStyle, useColorScheme, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { RootStackParamList } from '../types';
 
@@ -13,6 +13,7 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
         isHost,
         questions
     } = props.route.params;
+    const colorScheme = useColorScheme();
     const playersDoneIncrementer = firebase.firestore.FieldValue.increment(1);
     const [ userAnswer, updateUserAnswer ] = React.useState("");
     const [ currentQuestionIndex, updateQuestionIndex ] = React.useState(0);
@@ -52,63 +53,74 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
     return (
         <View style={styles.container}>
             <View style={styles.questionContainer}>
-                <Text style={styles.plusSign}>+</Text>
+                <Text style={{...styles.plusSign, ...(colorScheme === "dark" && styles.plusSignDark)}}>+</Text>
                 <View style={styles.numberContainer}>
-                    <Text style={styles.numbers}>{questions[currentQuestionIndex]}</Text>
-                    <Text style={styles.numbers}>{questions[currentQuestionIndex + 1]}</Text>
+                    <Text style={{...styles.numbers, ...(colorScheme === "dark" && styles.numbersDark)}}>{questions[currentQuestionIndex]}</Text>
+                    <Text style={{...styles.numbers, ...(colorScheme === "dark" && styles.numbersDark)}}>{questions[currentQuestionIndex + 1]}</Text>
                 </View>
                 <TextInput
+                autoFocus={true}
                 onChangeText={validaUserTypedAnswer}
                 onSubmitEditing={submitAnswer}
                 value={userAnswer}
                 keyboardType={"number-pad"}
-                style={styles.answerInput}/>
+                style={{...styles.answerInput, ...(colorScheme === "dark" && styles.answerInputDark)}}/>
             </View>
         </View>
-        );
+    );
+}
+
+const textStyle: TextStyle = {
+    fontSize: 100
+};
+
+const styles = StyleSheet.create({
+    answerInput: {
+        borderBottomColor: "black",
+        borderBottomWidth: 3,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        height: 120,
+        marginLeft: 100,
+        marginTop: 10,
+        fontSize: 100,
+        textAlign: "right"
+    },
+    answerInputDark: {
+        borderBottomColor: "white",
+        color: "white"
+    },
+    container: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+        marginHorizontal: 10,
+    },
+    numbers: {
+        ...textStyle,
+        lineHeight: 110
+    },
+    numbersDark: {
+        color: "white"
+    },
+    numberContainer: {
+        alignItems: "flex-end",
+        borderBottomColor: "black",
+        borderBottomWidth: 5,
+        height: 220,
+        marginLeft: 100
+    },
+    plusSign: {
+        ...textStyle,
+        position: "absolute",
+        top: 90,
+        color: "white"
+    },
+    plusSignDark: {
+        color: "white"
+    },
+    questionContainer: {
+        height: "50%",
+        width: "100%"
     }
-    
-    const textStyle: TextStyle = {
-        fontSize: 100
-    };
-    
-    const styles = StyleSheet.create({
-        answerInput: {
-            borderBottomColor: "black",
-            borderBottomWidth: 3,
-            borderBottomLeftRadius: 0,
-            borderBottomRightRadius: 0,
-            height: 120,
-            marginLeft: 100,
-            marginTop: 10,
-            fontSize: 100,
-            textAlign: "right",
-        },
-        container: {
-            alignItems: 'center',
-            flex: 1,
-            justifyContent: 'center',
-            marginHorizontal: 10
-        },
-        numbers: {
-            ...textStyle,
-            lineHeight: 110
-        },
-        numberContainer: {
-            alignItems: "flex-end",
-            borderBottomColor: "black",
-            borderBottomWidth: 5,
-            height: 220,
-            marginLeft: 100
-        },
-        plusSign: {
-            ...textStyle,
-            position: "absolute",
-            top: 90
-        },
-        questionContainer: {
-            height: "50%",
-            width: "100%"
-        }
-    });
-    
+});

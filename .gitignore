@@ -133,3 +133,6 @@ docs/pages/versions/*/react-native/*.diff
 
 # API Secret file
 .apikey
+
+# Play Store Service Account secret
+play-store-service-account-secret.json

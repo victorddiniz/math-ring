@@ -10,10 +10,10 @@ export default {
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "contain",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#2e3546"
     },
     updates: {
-      fallbackToCacheTimeout: 0
+      fallbackToCacheTimeout: 1000
     },
     assetBundlePatterns: [
       "**/*"
@@ -26,14 +26,11 @@ export default {
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
-        backgroundColor: "#FFFFFF"
+        backgroundColor: "#2e3546"
       },
       package: "com.vddm.math_ring",
       permissions: [],
       versionCode: 2
-    },
-    web: {
-      favicon: "./assets/images/favicon.png"
     }
   }
 }

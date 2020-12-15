@@ -1,4 +1,4 @@
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
@@ -7,6 +7,7 @@ import EndGameScreen from '../screens/EndGame';
 import GameScreen from '../screens/GameScreen';
 import RootScreen from '../screens/RootScreen';
 import ShareGameScreen from '../screens/ShareGameScreen';
+import { defaultTheme } from '../themes/defaultTheme';
 import { RootStackParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
@@ -16,7 +17,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={defaultTheme}>
       <RootNavigator />
     </NavigationContainer>
   );

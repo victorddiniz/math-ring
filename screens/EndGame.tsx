@@ -1,9 +1,9 @@
-import { RouteProp } from "@react-navigation/native";
-import * as React from "react";
-import { StyleSheet, Clipboard, Text, ActivityIndicator, View, useColorScheme } from "react-native";
-
-import { RootStackParamList } from "../types";
+import { RouteProp, useTheme } from "@react-navigation/native";
 import firebase from "firebase";
+import * as React from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { RootStackParamList } from "../types";
+
 
 type EndGameScreenRouteProp = RouteProp<
 RootStackParamList,
@@ -22,7 +22,7 @@ export default function EndGameScreen(props: EndGameProps) {
         totalTime
     } = props.route.params;
     const [ partnersTime, updatePartnersTime ] = React.useState(0);
-    const colorSchema = useColorScheme();
+    const theme = useTheme();
     const gameDocument = firestore.collection("games").doc(gameId);
     gameDocument.get().then(documentInstance => {
         const isGameOver = documentInstance.get("playersDone") === 2;
@@ -41,17 +41,6 @@ export default function EndGameScreen(props: EndGameProps) {
         }
     });
 
-    return (
-        <View style={styles.container}>
-            <ActivityIndicator animating={!partnersTime} size={"large"} color={"blue"}/>
-            <View style={{display: !partnersTime ? "none" : "flex"}}>
-                <Text style={{...styles.text, ...(colorSchema === "dark" && styles.textDark)}}>Your score = {Math.ceil(totalTime/1000)}s</Text>
-                <Text style={{...styles.text, ...(colorSchema === "dark" && styles.textDark)}}>Friend's score = {Math.ceil(partnersTime/1000)}s</Text>
-            </View>
-        </View>
-    );
-}
-    
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -59,9 +48,19 @@ export default function EndGameScreen(props: EndGameProps) {
             justifyContent: "center"
         },
         text: {
+            color: theme.colors.text,
+            fontWeight: "700",
             fontSize: 30
-        },
-        textDark: {
-            color: "white"
         }
     });
+
+    return (
+        <View style={styles.container}>
+            <ActivityIndicator animating={!partnersTime} size={"large"} color={theme.colors.text}/>
+            <View style={{display: !partnersTime ? "none" : "flex"}}>
+                <Text style={{...styles.text}}>Your score = {Math.ceil(totalTime/1000)}s</Text>
+                <Text style={{...styles.text}}>Friend's score = {Math.ceil(partnersTime/1000)}s</Text>
+            </View>
+        </View>
+    );
+}

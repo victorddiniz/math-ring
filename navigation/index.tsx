@@ -2,7 +2,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
-import EndGameScreen from '../screens/EndGame';
 
 import GameScreen from '../screens/GameScreen';
 import RootScreen from '../screens/RootScreen';
@@ -30,7 +29,6 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName={"Root"} screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="EndGame" component={EndGameScreen} initialParams={{ gameId: "4XDB14vidPdf4Zdf0tMr", isHost: true, totalTime: 11234}}/>
       <Stack.Screen name="Game" component={GameScreen} initialParams={{ gameId: "4XDB14vidPdf4Zdf0tMr", questions: [] }}/>
       <Stack.Screen name="Root" component={RootScreen} />
       <Stack.Screen name="ShareGame" component={ShareGameScreen} initialParams={{ gameId: "" }} />

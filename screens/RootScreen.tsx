@@ -1,23 +1,33 @@
 import { useTheme } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { StackScreenProps } from "@react-navigation/stack";
 import firebase from "firebase";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Game, GameStore } from "../apis";
+import { ScoreCard } from "../components";
 import { RootStackParamList } from "../types";
 
-
-type RootScreenNavigationProps = StackNavigationProp<
-  RootStackParamList,
-  "Root"
->;
-
-type RootScreenProps = {
-  navigation: RootScreenNavigationProps
-};
+type RootScreenProps = StackScreenProps<RootStackParamList, "Root">;
 
 export default function RootScreen(props: RootScreenProps) {
   const firestore = firebase.firestore();
+  const gameStore = new GameStore();
   const theme = useTheme();
+  const lastMatchId = props.route.params && props.route.params.lastMatchId;
+  const [ lastGame, updateLastGame ] = React.useState<Game>();
+  const [ hasSubscribed, setSubscriptionStatus ] = React.useState(false);
+
+  if (lastMatchId && !hasSubscribed) {
+    setSubscriptionStatus(true);
+    const unsubscribeFunctionPromise = gameStore.listenToGameUpdates(lastMatchId, game => {
+      if (game?.playersDone === 2) {
+        updateLastGame(game);
+        unsubscribeFunctionPromise.then(unsubscribe => {
+          unsubscribe();
+        });
+      }
+    });
+  }
 
   function getRandomIntInclusive(min: number, max: number) {
     min = Math.ceil(min);
@@ -86,11 +96,15 @@ export default function RootScreen(props: RootScreenProps) {
             height: 1,
             width: "80%",
             backgroundColor: theme.colors.text
-        },
+        }
     });
 
   return (
     <View style={styles.container}>
+        {
+            lastMatchId &&
+            <ScoreCard spinnerOn={!lastGame} visible={true} ownScore={lastGame?.guestTime} friendsScore={lastGame?.hostTime}/>
+        }
       <Pressable onPress={newGameClick} style={{...styles.button}}>
         <Text style={styles.buttonText}>Create a game</Text>
       </Pressable>

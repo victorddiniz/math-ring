@@ -1,8 +1,7 @@
 export type RootStackParamList = {
-  Root: undefined;
+  Root: { lastMatchId: string };
   ShareGame: { gameId: string };
   Game: { gameId: string; questions: number[], isHost: boolean };
-  EndGame: { gameId: string, isHost: boolean, totalTime: number };
 };
 
 export type BottomTabParamList = {

@@ -45,7 +45,7 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
                     "playersDone": playersDoneIncrementer,
                     [playerField]: totalTime
                 });
-                props.navigation.navigate("EndGame", { gameId, isHost, totalTime });
+                props.navigation.navigate("Root", { lastMatchId: gameId });
             }
         }
         updateUserAnswer("");

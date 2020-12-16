@@ -4,8 +4,10 @@ export const defaultTheme: Theme = {
     dark: false,
     colors: {
         ...DefaultTheme.colors,
-        primary: "#C6934B",
         background: "#2e3546",
+        card: "#703529",
+        notification: "#E0DDD5",
+        primary: "#C6934B",
         text: "#C7944D"
     }
 }

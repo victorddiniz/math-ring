@@ -15,6 +15,7 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
         questions
     } = props.route.params;
     const theme = useTheme();
+    const numberOfQuestions = questions.length;
     const playersDoneIncrementer = firebase.firestore.FieldValue.increment(1);
     const [ userAnswer, updateUserAnswer ] = React.useState("");
     const [ currentQuestionIndex, updateQuestionIndex ] = React.useState(0);
@@ -23,11 +24,22 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
     const gameDocument = firestore.collection("games").doc(gameId);
 
     React.useEffect(() => {
+        if (currentQuestionIndex >= numberOfQuestions) {
+            const playerField = isHost ? "hostTime" : "guestTime";
+            gameDocument.update({
+                "playersDone": playersDoneIncrementer,
+                [playerField]: totalTime
+            });
+            props.navigation.navigate("Root", { lastMatchId: gameId });
+        }
+    }, [currentQuestionIndex, totalTime]);
+
+    React.useEffect(() => {
         return props.navigation.addListener("beforeRemove", (event) => {
-            if (currentQuestionIndex < questions.length) event.preventDefault();
+            if (currentQuestionIndex < numberOfQuestions) event.preventDefault();
         });
     });
-    
+
     function validaUserTypedAnswer(userCurrentAnswer: string) {
         if (userCurrentAnswer.match(/^[0-9]*$/) !== null) {
             updateUserAnswer(userCurrentAnswer);
@@ -41,17 +53,7 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
             const elapsedTimeToAnswer = submitTimestamp - timestampOfLastCorrectAnswer;
             updateTotalTime(totalTime + elapsedTimeToAnswer);
             updateTimestampOfLastCorrectAnswer(submitTimestamp);
-            const newIndex = currentQuestionIndex + 2;
-            updateQuestionIndex(newIndex);
-            
-            if (newIndex >= questions.length) {
-                const playerField = isHost ? "hostTime" : "guestTime";
-                await gameDocument.update({
-                    "playersDone": playersDoneIncrementer,
-                    [playerField]: totalTime
-                });
-                props.navigation.navigate("Root", { lastMatchId: gameId });
-            }
+            updateQuestionIndex(currentQuestionIndex + 2);
         }
         updateUserAnswer("");
     }
@@ -100,6 +102,7 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
     });
 
     return (
+            currentQuestionIndex < numberOfQuestions &&
             <View style={styles.container}>
                 <KeyboardAvoidingView behavior="position" style={styles.questionContainer}>
                     <Text style={{...styles.plusSign}}>+</Text>

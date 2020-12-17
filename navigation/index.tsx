@@ -22,6 +22,13 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   );
 }
 
+const backButtonHeaderOptions = {
+  headerBackTitle: "back",
+  headerShown: true,
+  headerTitle: "",
+  headerTransparent: true
+};
+
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator<RootStackParamList>();
@@ -31,7 +38,7 @@ function RootNavigator() {
     <Stack.Navigator initialRouteName={"Root"} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Game" component={GameScreen} initialParams={{ gameId: "4XDB14vidPdf4Zdf0tMr", questions: [] }}/>
       <Stack.Screen name="Root" component={RootScreen} />
-      <Stack.Screen name="ShareGame" component={ShareGameScreen} initialParams={{ gameId: "" }} />
+      <Stack.Screen name="ShareGame" component={ShareGameScreen} initialParams={{ gameId: "" }} options={{...backButtonHeaderOptions}} />
     </Stack.Navigator>
   );
 }

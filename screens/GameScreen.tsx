@@ -21,6 +21,12 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
     const [ timestampOfLastCorrectAnswer, updateTimestampOfLastCorrectAnswer ] = React.useState(Date.now());
     const [ totalTime, updateTotalTime ] = React.useState(0);
     const gameDocument = firestore.collection("games").doc(gameId);
+
+    React.useEffect(() => {
+        return props.navigation.addListener("beforeRemove", (event) => {
+            if (currentQuestionIndex < questions.length) event.preventDefault();
+        });
+    });
     
     function validaUserTypedAnswer(userCurrentAnswer: string) {
         if (userCurrentAnswer.match(/^[0-9]*$/) !== null) {
@@ -36,10 +42,9 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
             updateTotalTime(totalTime + elapsedTimeToAnswer);
             updateTimestampOfLastCorrectAnswer(submitTimestamp);
             const newIndex = currentQuestionIndex + 2;
+            updateQuestionIndex(newIndex);
             
-            if (newIndex < questions.length) {
-                updateQuestionIndex(newIndex);
-            } else {
+            if (newIndex >= questions.length) {
                 const playerField = isHost ? "hostTime" : "guestTime";
                 await gameDocument.update({
                     "playersDone": playersDoneIncrementer,

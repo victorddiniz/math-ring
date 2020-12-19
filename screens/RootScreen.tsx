@@ -22,12 +22,20 @@ export default function RootScreen(props: RootScreenProps) {
   React.useEffect(() => {
     if (gameStore && lastMatchId) {
       return gameStore.listenToGameUpdates(lastMatchId, game => {
-        if (game?.playersDone === 2) {
+        if (game?.scoreBoard.length === 2) {
           updateLastGame(game);
         }
       })
     }
   }, [lastMatchId]);
+
+  function getOwnScore(): number {
+    return lastGame?.scoreBoard.find(score => score.userId === gameStore?.currentUser.uid)?.time || 0;
+  }
+
+  function getFriendsScore(): number {
+    return lastGame?.scoreBoard.find(score => score.userId !== gameStore?.currentUser.uid)?.time || 0;
+  }
 
   function getRandomIntInclusive(min: number, max: number) {
     min = Math.ceil(min);
@@ -48,9 +56,7 @@ export default function RootScreen(props: RootScreenProps) {
   async function newGameClick() {
     const firestore = firebase.firestore();
     const documentReference = await firestore.collection("games").add({
-      playersDone: 0,
-      guestTime: 0,
-      hostTime: 0,
+      scoreBoard: [],
       questions: generateGameQuestions()
     });
 
@@ -104,7 +110,7 @@ export default function RootScreen(props: RootScreenProps) {
     <View style={styles.container}>
         {
             lastMatchId.length > 0 &&
-            <ScoreCard spinnerOn={!lastGame} visible={true} ownScore={lastGame?.guestTime} friendsScore={lastGame?.hostTime}/>
+            <ScoreCard spinnerOn={!lastGame} visible={true} ownScore={getOwnScore()} friendsScore={getFriendsScore()}/>
         }
       <Pressable onPress={newGameClick} style={{...styles.button}}>
         <Text style={styles.buttonText}>Create a game</Text>

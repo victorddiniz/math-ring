@@ -4,6 +4,7 @@ import firebase from "firebase";
 import * as React from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import useGameStore from '../hooks/useGameStore';
 import { RootStackParamList } from '../types';
 
 
@@ -11,24 +12,24 @@ export default function GameScreen(props: StackScreenProps<RootStackParamList, "
     const firestore = firebase.firestore();
     const {
         gameId,
-        isHost,
         questions
     } = props.route.params;
     const theme = useTheme();
     const numberOfQuestions = questions.length;
-    const playersDoneIncrementer = firebase.firestore.FieldValue.increment(1);
     const [ userAnswer, updateUserAnswer ] = React.useState("");
     const [ currentQuestionIndex, updateQuestionIndex ] = React.useState(0);
     const [ timestampOfLastCorrectAnswer, updateTimestampOfLastCorrectAnswer ] = React.useState(Date.now());
     const [ totalTime, updateTotalTime ] = React.useState(0);
     const gameDocument = firestore.collection("games").doc(gameId);
+    const gameStore = useGameStore();
 
     React.useEffect(() => {
         if (currentQuestionIndex >= numberOfQuestions) {
-            const playerField = isHost ? "hostTime" : "guestTime";
             gameDocument.update({
-                "playersDone": playersDoneIncrementer,
-                [playerField]: totalTime
+                scoreBoard: firebase.firestore.FieldValue.arrayUnion({
+                    userId: gameStore?.currentUser.uid,
+                    time: totalTime
+                })
             });
             props.navigation.navigate("Root", { lastMatchId: gameId });
         }

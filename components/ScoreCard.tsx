@@ -70,8 +70,8 @@ export const ScoreCard: FunctionComponent<ScoreCardProps> = (props): JSX.Element
                     </Pressable>
                     <ActivityIndicator style={styles.spinner} animating={props.spinnerOn} size={"large"} color={theme.colors.notification}/>
                     <Text style={[styles.text, styles.title]}>Waiting for friend to finish</Text>
-                    {props.ownScore && <Text style={styles.text}>Your score = {Math.ceil(props.ownScore/1000)}s</Text>}
-                    {props.friendsScore && <Text style={styles.text}>Friend's score = {Math.ceil(props.friendsScore/1000)}s</Text>}
+                    {!!props.ownScore && <Text style={styles.text}>Your score = {Math.ceil(props.ownScore/1000)}s</Text>}
+                    {!!props.friendsScore && <Text style={styles.text}>Friend's score = {Math.ceil(props.friendsScore/1000)}s</Text>}
                 </View>
             </View>
         </Modal>

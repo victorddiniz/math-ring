@@ -1,7 +1,8 @@
 export interface Game {
-    guestTime: number;
-    hostTime: number;
+    scoreBoard: {
+        userId: string;
+        time: number;
+    }[];
     id: string;
-    playersDone: number;
     questions: number[];
 }

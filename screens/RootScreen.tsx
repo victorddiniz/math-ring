@@ -3,31 +3,31 @@ import { StackScreenProps } from "@react-navigation/stack";
 import firebase from "firebase";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Game, GameStore } from "../apis";
+import { Game } from "../apis";
 import { ScoreCard } from "../components";
+import useGameStore from "../hooks/useGameStore";
 import { RootStackParamList } from "../types";
 
 type RootScreenProps = StackScreenProps<RootStackParamList, "Root">;
 
 export default function RootScreen(props: RootScreenProps) {
-  const firestore = firebase.firestore();
-  const gameStore = new GameStore();
   const theme = useTheme();
-  const lastMatchId = props.route.params && props.route.params.lastMatchId;
   const [ lastGame, updateLastGame ] = React.useState<Game>();
-  const [ hasSubscribed, setSubscriptionStatus ] = React.useState(false);
-
-  if (lastMatchId && !hasSubscribed) {
-    setSubscriptionStatus(true);
-    const unsubscribeFunctionPromise = gameStore.listenToGameUpdates(lastMatchId, game => {
-      if (game?.playersDone === 2) {
-        updateLastGame(game);
-        unsubscribeFunctionPromise.then(unsubscribe => {
-          unsubscribe();
-        });
-      }
-    });
+  const [ lastMatchId, setLastMathcId ] = React.useState("");
+  if (!lastMatchId && props.route.params && props.route.params.lastMatchId) {
+    setLastMathcId(props.route.params.lastMatchId);
   }
+  const gameStore = useGameStore();
+
+  React.useEffect(() => {
+    if (gameStore && lastMatchId) {
+      return gameStore.listenToGameUpdates(lastMatchId, game => {
+        if (game?.playersDone === 2) {
+          updateLastGame(game);
+        }
+      })
+    }
+  }, [lastMatchId]);
 
   function getRandomIntInclusive(min: number, max: number) {
     min = Math.ceil(min);
@@ -46,6 +46,7 @@ export default function RootScreen(props: RootScreenProps) {
   }
 
   async function newGameClick() {
+    const firestore = firebase.firestore();
     const documentReference = await firestore.collection("games").add({
       playersDone: 0,
       guestTime: 0,
@@ -102,7 +103,7 @@ export default function RootScreen(props: RootScreenProps) {
   return (
     <View style={styles.container}>
         {
-            lastMatchId &&
+            lastMatchId.length > 0 &&
             <ScoreCard spinnerOn={!lastGame} visible={true} ownScore={lastGame?.guestTime} friendsScore={lastGame?.hostTime}/>
         }
       <Pressable onPress={newGameClick} style={{...styles.button}}>

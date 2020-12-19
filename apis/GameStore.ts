@@ -5,12 +5,14 @@ type UnsubscribeFunction = () => void;
 
 export class GameStore {
     private readonly firestore: firebase.firestore.Firestore ;
+    public readonly currentUser: firebase.User;
 
-    constructor() {
-        this.firestore = firebase.firestore();
+    constructor(firebaseApp: firebase.app.App, firebaseUser: firebase.User) {
+        this.firestore = firebaseApp.firestore();
+        this.currentUser = firebaseUser;
     }
 
-    public async listenToGameUpdates(gameId: string, callback: (game: Game | undefined) => void): Promise<UnsubscribeFunction> {
+    public listenToGameUpdates(gameId: string, callback: (game: Game | undefined) => void): UnsubscribeFunction {
         const gameReference = this.firestore.collection("games").doc(gameId);
         return gameReference.onSnapshot(snapshot => {
             callback({
